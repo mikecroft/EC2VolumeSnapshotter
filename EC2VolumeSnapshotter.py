@@ -1,4 +1,4 @@
-
+#!/usr/bin/python
 ##############################################################################
 
 import subprocess
@@ -51,7 +51,7 @@ class EC2VolumeSnapshotter:
 			#sys.exit()
 
 		# if there are not > 7 (1 week) snapshots, abort
-		if (countSnapshots(listSnapShots(vol_name) > 7):
+		if (countSnapshots(listSnapShots(vol_name) > 7)):
 			# find earliest snapshot and delete
 			deleteSnapshot(
 				findEarliest(
@@ -70,7 +70,7 @@ class EC2VolumeSnapshotter:
 		vol_error = "Client.InvalidVolume.NotFound: The volume '" + vol_name + "' does not exist."
 
 		vTest = subprocess.Popen(
-			['ec2dvol', '-O', self.aws_access_key, '-W', self.aws_secret_key, '--region', self.region, vol_name],
+			['ec2dvol', '--region', self.region, vol_name],
 			stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		out, err = vTest.communicate()
 
@@ -91,14 +91,13 @@ class EC2VolumeSnapshotter:
 			the given volume name
 		'''
 		addSnap = subprocess.Popen(
-			['ec2addsnap', '-O', self.aws_access_key, '-W', self.aws_secret_key, '--region', self.region, vol_name],
+			['ec2addsnap', '--region', self.region, vol_name],
 			stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		out, err = addSnap.communicate()
 
 		if (err == ""):
 			self.logger.info("Created snapshot:\n" + out)
 			return True
-		self.logger.error("Could not create snapshot. AWS returned stdout: " + out)
 		self.logger.error("Could not create snapshot. AWS returned stderr: " + err)
 		return False
 
@@ -108,7 +107,7 @@ class EC2VolumeSnapshotter:
 
 		# TODO untested!!
 		describe = subprocess.Popen(
-			['ec2dsnap', '-O', self.aws_access_key, '-W', self.aws_secret_key, '--region', self.region, 'volume-id=' + vol_name],
+			['ec2dsnap', '--region', self.region, 'volume-id=' + vol_name],
 			stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 		out, err = describe.communicate()
@@ -127,56 +126,3 @@ class EC2VolumeSnapshotter:
 	def deleteSnapshot(self, ss):
 		return False
 
-
-
-##############################################################################
-#                                                                            #
-#                                                                            #
-#                                TEST SPACE!!                                #
-#                                                                            #
-#                                                                            #
-##############################################################################
-
-
-'''ec2_home = ""
-path = ""
-java_home = ""
-aws_access_key = ""
-aws_secrect_key = ""
-
-ec2vs = EC2VolumeSnapshotter(
-	ec2_home, path, java_home, 
-	aws_access_key, aws_secrect_key)
-
-
-
-
-try:
-	# logger.info("Using " + vol)
-	ec2vs.runSnapshotter("vol-c2ddd4e8")
-except Exception, e:
-	# logger.error(e)
-	raise e
-finally:
-	sys.exit()'''
-
-##############################################################################
-#                                                                            #
-#                                                                            #
-#                                TEST SPACE!!                                #
-#                                                                            #
-#                                                                            #
-##############################################################################
-#
-#
-#
-# testVol = subprocess.Popen(['ec2dvol', '--region', 'eu-west-1', 'vol-c2ddd4e8'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-#
-#
-#
-#
-#
-#
-#
-#
-###############################################################################

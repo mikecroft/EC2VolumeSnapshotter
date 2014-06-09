@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import logging
 import logging.config
 
@@ -11,15 +13,14 @@ ec2_home = ""
 path = ""
 java_home = ""
 region = 'eu-west-1'
-aws_access_key = 'AKIAI2SFGZYDFCR2QFRQ'
-aws_secret_key = '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'
+aws_access_key = ''
+aws_secret_key = ''
 
 
 ec2vs = EC2VolumeSnapshotter(ec2_home, 
 				 path, java_home, region,
 				 aws_access_key, aws_secret_key)
 
-logger.info(ec2vs.createSnapshot(""))
 
 logger.info("trying with vol-00000123")
 
@@ -33,5 +34,3 @@ ec2vs.createSnapshot("vol-08f84a0")
 
 
 
-
-#ec2addsnap -O AKIAI2SFGZYDFCR2QFRQ -W YLBiIUgTLtyWJF85pOxqPDid8WQMbDl6/Duckokg --region eu-west-1 vol-08f84a0
