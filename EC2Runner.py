@@ -22,15 +22,16 @@ ec2vs = EC2VolumeSnapshotter(ec2_home,
 				 aws_access_key, aws_secret_key)
 
 
-logger.info("trying with vol-00000123")
+#logger.info("trying with vol-00000123")
 
-ec2vs.isVolNameValid("vol-00000123")
+#ec2vs.isVolNameValid("vol-00000123")
 
-logger.info("trying again with vol-08f84a0a")
+logger.info("validating vol-08f84a0a")
 ec2vs.isVolNameValid("vol-08f84a0a")
 
-logger.info("trying to create snapshot")
-ec2vs.createSnapshot("vol-08f84a0")
+#logger.info("trying to create snapshot")
+#ec2vs.createSnapshot("vol-08f84a0a")
 
-
+logger.info("listing snapshots for vol-08f84a0a")
+logger.info(ec2vs.listSnapshots("vol-08f84a0a"))
 

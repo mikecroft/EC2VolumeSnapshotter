@@ -102,17 +102,30 @@ class EC2VolumeSnapshotter:
 		return False
 
 
-	def listSnapShots(self, vol_name):
+	def listSnapshots(self, vol_name):
+		''' Uses ec2dsnap to list all the snapshots for
+			the given volume name.
 
+			Returns a list of lists (2d array) or snapshots
+			like [[snap, timestamp],...[snapN, timestampN]]
+		'''
 
-		# TODO untested!!
 		describe = subprocess.Popen(
-			['ec2dsnap', '--region', self.region, 'volume-id=' + vol_name],
+			['ec2dsnap', '--region', self.region, '-F', 'volume-id=' + vol_name],
 			stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
 		out, err = describe.communicate()
 
-		return out
+		self.logger.info("For volume " +
+			vol_name + " found the following snapshots:\n" + out)
+
+		lines = filter(None, out.splitlines())
+
+		snaps = []
+		for line in lines:
+			words = line.split()
+			snaps.append([words[1], words[4]])
+
+		return snaps
 
 
 	def countSnapshots(self, snapshots):
@@ -125,4 +138,18 @@ class EC2VolumeSnapshotter:
 
 	def deleteSnapshot(self, ss):
 		return False
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
