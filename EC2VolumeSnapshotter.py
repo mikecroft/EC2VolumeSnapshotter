@@ -51,14 +51,14 @@ class EC2VolumeSnapshotter:
 			#sys.exit()
 
 		# if there are not > 7 (1 week) snapshots, abort
-		if (countSnapshots(listSnapShots(vol_name) > 7)):
+		if (len(listSnapShots(vol_name) > 7)):
 			# find earliest snapshot and delete
 			deleteSnapshot(
 				findEarliest(
 					listSnapShots(vol_name)))
 		else:
 			self.logger.warn("Not enough snapshots existed. There are currently " +
-				countSnapshots(listSnapShots(vol_name)))
+				len(listSnapShots(vol_name)))
 
 
 	def isVolNameValid(self, vol_name):
@@ -129,7 +129,8 @@ class EC2VolumeSnapshotter:
 
 
 	def countSnapshots(self, snapshots):
-		return number
+		# TODO This function is unneccessary. Should delete.
+		return len(snapshots)
 
 	def findEarliest(self, snapshots):
 
