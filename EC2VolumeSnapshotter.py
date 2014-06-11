@@ -133,7 +133,17 @@ class EC2VolumeSnapshotter:
 		return len(snapshots)
 
 	def findEarliest(self, snapshots):
+		''' Given a list of snapshot IDs and
+			their timestamps, finds the oldest
+			and returns the ID of the snapshot
+		'''
+		dates = []
+		for snap in snapshots:
+			dates.append(snap[1])
 
+		for snap in snapshots:
+			if (snap[1] == min(dates)):
+				ss = snap [0]
 		return ss
 
 
