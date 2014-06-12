@@ -10,33 +10,21 @@ import logging.config
 
 class EC2VolumeSnapshotter:
 
-	ec2_home = ""
-	path = ""
-	java_home = ""
 	region = 'eu-west-1'
-	aws_access_key = ""
-	aws_secret_key = ""
 	logger = logging.getLogger(__name__)
 	
 
 	#vol_name = ""
 
-	def __init__(self, ec2_home, 
-				 path, java_home, region,
-				 aws_access_key, aws_secret_key):
-		self.ec2_home = ec2_home
-		self.path = path
-		self.java_home = java_home
+	def __init__(self, region):
 		self.region = region
-		self.aws_access_key = aws_access_key
-		self.aws_secret_key = aws_secret_key
 		logging.config.fileConfig('logging.ini', disable_existing_loggers=False)
 
 
-	def runSnapshotter(vol_name):
+	def runSnapshotter(self, vol_name):
 		# verify vol_name is valid
-		# logger.info("Validating volume" + vol_name)
-		if (not isVolNameValid(vol_name)):
+		# self.logger.info("Validating volume" + vol_name)
+		if (not self.isVolNameValid(vol_name)):
 			# TODO handle exception and log
 			raise Exception(
 				  "I can't find that volume name. "
@@ -44,21 +32,22 @@ class EC2VolumeSnapshotter:
 				+ "Is the correct region set?").with_traceback(tracebackobj)
 
 		# create new snapshot
-		if (not createSnapshot(vol_name)):
+		if (not self.createSnapshot(vol_name)):
 			# TODO handle exception and log
 			raise Exception(
 				  "Could not create snapshot. Exiting.").with_traceback(tracebackobj)
 			#sys.exit()
 
+		snaps = self.listSnapshots(vol_name)
+
 		# if there are not > 7 (1 week) snapshots, abort
-		if (len(listSnapShots(vol_name) > 7)):
+		if (len(snaps) > 7):
 			# find earliest snapshot and delete
-			deleteSnapshot(
-				findEarliest(
-					listSnapShots(vol_name)))
+			self.deleteSnapshot(
+				self.findEarliest(snaps))
 		else:
 			self.logger.warn("Not enough snapshots existed. There are currently " +
-				len(listSnapShots(vol_name)))
+				str(len(snaps)))
 
 
 	def isVolNameValid(self, vol_name):
@@ -110,6 +99,8 @@ class EC2VolumeSnapshotter:
 			like [[snap, timestamp],...[snapN, timestampN]]
 		'''
 
+		# TODO: Handle snapshots with names (names print on a new line)
+
 		describe = subprocess.Popen(
 			['ec2dsnap', '--region', self.region, '-F', 'volume-id=' + vol_name],
 			stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -144,23 +135,20 @@ class EC2VolumeSnapshotter:
 		for snap in snapshots:
 			if (snap[1] == min(dates)):
 				ss = snap [0]
+		self.logger.info("The earliest snapshot is: " + ss)
 		return ss
 
 
 	def deleteSnapshot(self, ss):
+
+		self.logger.info("About to delete snapshot: " + ss)
+		delete = subprocess.Popen(
+			['ec2delsnap', ss, '--region', self.region],
+			stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+		out, err = delete.communicate()
+
 		return False
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	def findSnapshot(self, ss):
+		# TODO make sure new snapshot is completed
+		return False
