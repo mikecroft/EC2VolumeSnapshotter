@@ -29,13 +29,13 @@ class EC2VolumeSnapshotter:
 			raise Exception(
 				  "I can't find that volume name. "
 				+ "Is the name correct? "
-				+ "Is the correct region set?").with_traceback(tracebackobj)
+				+ "Is the correct region set?")
 
 		# create new snapshot
 		if (not self.createSnapshot(vol_name)):
 			# TODO handle exception and log
 			raise Exception(
-				  "Could not create snapshot. Exiting.").with_traceback(tracebackobj)
+				  "Could not create snapshot. Exiting.")
 			#sys.exit()
 
 		snaps = self.listSnapshots(vol_name)
@@ -62,6 +62,8 @@ class EC2VolumeSnapshotter:
 			['ec2dvol', '--region', self.region, vol_name],
 			stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		out, err = vTest.communicate()
+		out = out.strip().decode('utf-8')
+		err = err.strip().decode('utf-8')
 
 		if (out != vol_error and err == ""):
 			self.logger.info("The volume appears to be valid.\n" + out)
@@ -70,7 +72,8 @@ class EC2VolumeSnapshotter:
 			# TODO fix comparison so it only compares the first part of vol_error
 			self.logger.error("Could not find volume. AWS returned: " + out)
 			return False
-		self.logger.critical("An unexpected error occurred: " + err)
+		self.logger.critical("An unexpected error occurred: ")
+		self.logger.critical(err)
 		# TODO raise exception
 		return False
 
@@ -83,6 +86,8 @@ class EC2VolumeSnapshotter:
 			['ec2addsnap', '--region', self.region, vol_name],
 			stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		out, err = addSnap.communicate()
+		out = out.strip().decode('utf-8')
+		err = err.strip().decode('utf-8')
 
 		if (err == ""):
 			self.logger.info("Created snapshot:\n" + out)
@@ -105,6 +110,8 @@ class EC2VolumeSnapshotter:
 			['ec2dsnap', '--region', self.region, '-F', 'volume-id=' + vol_name],
 			stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		out, err = describe.communicate()
+		out = out.strip().decode('utf-8')
+		err = err.strip().decode('utf-8')
 
 		self.logger.info("For volume " +
 			vol_name + " found the following snapshots:\n" + out)
@@ -146,6 +153,8 @@ class EC2VolumeSnapshotter:
 			['ec2delsnap', ss, '--region', self.region],
 			stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		out, err = delete.communicate()
+		out = out.strip().decode('utf-8')
+		err = err.strip().decode('utf-8')
 
 		return False
 
