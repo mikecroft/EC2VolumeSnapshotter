@@ -16,12 +16,12 @@ class EC2VolumeSnapshotter:
 
 	#vol_name = ""
 
-	def __init__(self, region):
-		self.region = region
+	def __init__(self):
 		logging.config.fileConfig('logging.ini', disable_existing_loggers=False)
 
 
-	def runSnapshotter(self, vol_name):
+	def runSnapshotter(self, vol_name, ssmin=4, region='eu-west-1'):
+		self.region = region
 		# verify vol_name is valid
 		# self.logger.info("Validating volume" + vol_name)
 		if (not self.isVolNameValid(vol_name)):
@@ -41,7 +41,7 @@ class EC2VolumeSnapshotter:
 		snaps = self.listSnapshots(vol_name)
 
 		# if there are not > 7 (1 week) snapshots, abort
-		if (len(snaps) > 7):
+		if (len(snaps) > ssmin):
 			# find earliest snapshot and delete
 			self.deleteSnapshot(
 				self.findEarliest(snaps))

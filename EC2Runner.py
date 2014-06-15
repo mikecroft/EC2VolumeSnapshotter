@@ -13,18 +13,15 @@ logging.config.fileConfig('logging.ini', disable_existing_loggers=False)
 config = configparser.ConfigParser()
 config.read('config.ini')
 
-volumes = []
-for key in config.sections():
-	volumes.append(config[key]['vol_name'])
-
-
-# region = config['regions']['prime']
+# volumes = []
 region = 'eu-west-1'
+ec2vs = EC2VolumeSnapshotter()
 
-ec2vs = EC2VolumeSnapshotter(region)
+for key in config.sections():
+	logger.info('Snapshotting ' + key)
+	logger.info('Maintaining ' + config[key]['ssmin'] + ' snapshots')
 
-logger.info("Beginning script with region: " + region)
-
-for volume in volumes:
-	logger.info('Snapshotting volume: ' + volume)
-	ec2vs.runSnapshotter(volume)
+	ec2vs.runSnapshotter(
+		config[key]['vol_name'],
+		int(config[key]['ssmin']),
+		config[key]['region'])
