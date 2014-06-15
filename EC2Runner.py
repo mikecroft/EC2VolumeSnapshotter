@@ -7,18 +7,20 @@ import configparser
 from EC2VolumeSnapshotter import EC2VolumeSnapshotter
 
 logger = logging.getLogger(__name__)
+logging.config.fileConfig('logging.ini', disable_existing_loggers=False)
 
 
 config = configparser.ConfigParser()
 config.read('config.ini')
 
 volumes = []
-for key in config['volumes']:
-	volumes.append(config['volumes'][key])
+for key in config.sections():
+	volumes.append(config[key]['vol_name'])
 
-logging.config.fileConfig('logging.ini', disable_existing_loggers=False)
 
-region = config['regions']['prime']
+# region = config['regions']['prime']
+region = 'eu-west-1'
+
 ec2vs = EC2VolumeSnapshotter(region)
 
 logger.info("Beginning script with region: " + region)
