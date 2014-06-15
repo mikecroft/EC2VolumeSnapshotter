@@ -18,7 +18,7 @@ for key in config['volumes']:
 
 logging.config.fileConfig('logging.ini', disable_existing_loggers=False)
 
-region = 'eu-west-1'
+region = config['regions']['prime']
 ec2vs = EC2VolumeSnapshotter(region)
 
 logger.info("Beginning script with region: " + region)
