@@ -5,9 +5,6 @@
 import smtplib
 import configparser
 
-# config = configparser.ConfigParser()
-# config.read('emailconf.ini')
-
 class EmailNotifier:
 
 	config = configparser.ConfigParser()
@@ -27,6 +24,7 @@ class EmailNotifier:
 			TO.append(self.config['Notify_List'][addr])
 
 		server = smtplib.SMTP(SERVER, 587)
+		server.starttls()
 		server.set_debuglevel(3)
 		server.login(USER, PASS)
 		server.sendmail(FROM, TO, self.compose(FROM, TO, subject, body))
@@ -34,13 +32,12 @@ class EmailNotifier:
 
 	def compose(self, FROM, TO, subject, body):
 
+		# message = ""
+
 		header  = 'From: %s\n' % FROM
 		header += 'To: %s\n' % ','.join(TO)
 		# header += 'Cc: %s\n' % ','.join(cc_addr_list)
 		header += 'Subject: %s\n\n' % subject
-		message = header + message
+		message = header + body
 
 		return message
-
-eNotify = EmailNotifier()
-eNotify.notify("Snapshot script failed!", "The script failed. You should investigate.")
