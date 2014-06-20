@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import logging
 import logging.config
@@ -34,5 +34,10 @@ except Exception as e:
 	eNotify.notify('Snapshot script failed!',
 		'The script failed. You should investigate.\n' +
 		'\nThe error was:\n' +
-		str(e))
+		str(e),
+		'logs/snapshotter.log')
 	raise e
+
+eNotify.notify('Snapshot script completed without error!',
+		'The script has finished.\nCheck the logs to see if it worked.' +
+		'logs/snapshotter.log')
